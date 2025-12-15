@@ -247,11 +247,12 @@ textarea:focus {
     padding: 0;
 }
 
-.app-container.practice-mode header,
-.app-container.practice-mode .tab-bar {
+.app-container.practice-mode header {
     display: none;
-    /* Hide header and tabs in practice mode */
+    /* Hide header in practice mode */
 }
+
+/* Tab bar remains visible */
 
 .app-container.practice-mode main {
     background-color: transparent;
@@ -363,4 +364,14 @@ textarea:focus {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+footer {
+    margin-top: auto;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+    padding-top: 1rem;
+    font-family: var(--font-mono);
 }
