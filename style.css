@@ -156,22 +156,7 @@ main {
 }
 
 /* Screens */
-.screen {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    transition: opacity 0.3s ease;
-}
-
-.screen.hidden {
-    display: none;
-    opacity: 0;
-}
-
-.screen.active {
-    display: flex;
-    opacity: 1;
-}
+.screen {}
 
 /* Input Screen */
 .input-wrapper {
