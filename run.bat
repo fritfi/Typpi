@@ -1,0 +1,3 @@
+@echo off
+echo Starting Typpi...
+start index.html

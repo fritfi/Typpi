@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typpi - Study Notes Practice</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <nav id="tab-bar" class="tab-bar">
+            <!-- Tabs will be injected here -->
+            <button id="new-tab-btn" class="tab-btn new-tab" title="New Document">+</button>
+        </nav>
+
+        <header>
+            <h1>Typpi</h1>
+            <p>Retain your notes by typing them out.</p>
+        </header>
+
+        <main>
+            <!-- Input Screen -->
+            <section id="input-screen" class="screen active">
+                <div class="input-wrapper">
+                    <textarea id="source-text" placeholder="Paste your study notes here..."></textarea>
+                </div>
+                <div class="actions">
+                    <button id="start-btn" class="btn primary">Start Practice</button>
+                </div>
+            </section>
+
+            <!-- Typing Screen -->
+            <section id="typing-screen" class="screen hidden">
+                <div class="stats-bar">
+                    <button id="back-btn" class="btn secondary">← Back</button>
+                    <div class="progress-info">
+                        <span id="progress-text">0%</span>
+                    </div>
+                </div>
+                <div id="typing-area" class="typing-area">
+                    <!-- Text will be injected here -->
+                </div>
+                <div id="completion-message" class="hidden">
+                    <h2>Great job!</h2>
+                    <button id="restart-btn" class="btn primary">Practice Again</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
