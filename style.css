@@ -227,20 +227,6 @@ textarea:focus {
 
 /* Practice Mode Overrides */
 .app-container.practice-mode {
-    max-width: 100%;
-    height: 100vh;
-    padding: 0;
-}
-
-.app-container.practice-mode header {
-    display: none;
-    /* Hide header in practice mode */
-}
-
-/* Tab bar remains visible */
-
-.app-container.practice-mode main {
-    background-color: transparent;
     box-shadow: none;
     border-radius: 0;
     padding: 2rem 10%;

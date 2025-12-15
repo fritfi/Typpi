@@ -225,6 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         updateProgressUI(doc);
+
+        // Remove focus from buttons so Space doesn't trigger them
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
         document.body.focus();
     }
 
