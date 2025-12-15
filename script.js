@@ -213,6 +213,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 span.classList.add('current');
             }
 
+            if (char === '\n') {
+                span.classList.add('newline');
+            }
+
             typingArea.appendChild(span);
         });
 
