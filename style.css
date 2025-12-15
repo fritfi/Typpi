@@ -156,7 +156,13 @@ main {
 }
 
 /* Screens */
-.screen {}
+.screen {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+}
 
 /* Input Screen */
 .input-wrapper {
@@ -345,4 +351,8 @@ footer {
     opacity: 0.5;
     padding-top: 1rem;
     font-family: var(--font-mono);
+}
+
+.hidden {
+    display: none !important;
 }
