@@ -17,6 +17,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typpi - Study Notes Practice</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="glass-surface.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -62,8 +63,10 @@
                     <span id="progress-text">0%</span>
                     <span id="wpm-display">0 WPM</span>
                 </div>
-                <div id="typing-area" class="typing-area">
-                    <!-- Text will be injected here -->
+                <div id="glass-wrapper">
+                    <div id="typing-area" class="typing-area">
+                        <!-- Text will be injected here -->
+                    </div>
                 </div>
                 <div id="completion-message" class="hidden">
                     <h2>Great job!</h2>
@@ -77,6 +80,7 @@
         </footer>
     </div>
     <script src="script.js"></script>
+    <script src="glass-surface.js"></script>
     <script src="dot-grid.js"></script>
 </body>
 
