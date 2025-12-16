@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backBtn = document.getElementById('back-btn');
     const typingArea = document.getElementById('typing-area');
     const progressText = document.getElementById('progress-text');
+    const wpmDisplay = document.getElementById('wpm-display');
     const completionMessage = document.getElementById('completion-message');
     const restartBtn = document.getElementById('restart-btn');
 
@@ -17,21 +18,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let documents = [];
     let activeDocId = null;
 
+    // WPM State
+    let startTime = null;
+    let totalPausedTime = 0;
+    let lastKeyTime = null;
+    let isTimerRunning = false;
+    let typedEntries = 0; // Count actual keystrokes for more accurate WPM? Or just use index? Standard is (chars / 5) / min
+
     // Constants
     const STORAGE_KEY = 'typpi_documents_v1';
+    const PAUSE_THRESHOLD = 2000; // 2 seconds
 
     // Initialize
     loadDocuments();
     renderTabs();
 
     if (documents.length > 0) {
-        // Activate last active or first
-        const lastActive = documents.find(d => d.isActive);
-        if (lastActive) {
-            switchTab(lastActive.id);
-        } else {
-            switchTab(documents[0].id);
-        }
+        // Just render tabs, don't auto-switch
+        // This ensures "Start Practice" is visible for new sessions
+        renderTabs();
+        showInputScreen();
     } else {
         showInputScreen();
     }
@@ -41,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeDocId = null;
         renderTabs(); // Clear active state visually
         showInputScreen();
+        resetTimer();
     });
 
     startBtn.addEventListener('click', createDocument);
@@ -60,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTypingView(doc);
             completionMessage.classList.add('hidden');
             typingArea.classList.remove('hidden');
+            resetTimer();
         }
     });
 
@@ -116,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function switchTab(id) {
         activeDocId = id;
+        resetTimer();
 
         // Update active state in data
         documents.forEach(d => d.isActive = (d.id === id));
@@ -129,10 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeTab(e, id) {
-        e.stopPropagation(); // Prevent switching to tab when closing
+        // e.stopPropagation(); // Prevent switching to tab when closing
 
-        const confirmDelete = confirm('Delete this note?');
-        if (!confirmDelete) return;
+        // const confirmDelete = confirm('Delete this note?');
+        // if (!confirmDelete) return;
 
         documents = documents.filter(d => d.id !== id);
         saveDocuments();
@@ -141,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             activeDocId = null;
             renderTabs();
             showInputScreen();
+            resetTimer();
         } else if (activeDocId === id) {
             // Switch to last available
             switchTab(documents[documents.length - 1].id);
@@ -189,6 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderTypingView(doc) {
+        console.log('Rendering typing view for doc:', doc);
+        console.log('Typing area element:', typingArea);
+
         appContainer.classList.add('practice-mode');
         inputScreen.classList.remove('active');
         inputScreen.classList.add('hidden');
@@ -237,6 +250,86 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.focus();
     }
 
+    // --- WPM Logic ---
+
+    function startTimer() {
+        if (!isTimerRunning) {
+            startTime = Date.now();
+            lastKeyTime = startTime;
+            isTimerRunning = true;
+            totalPausedTime = 0;
+        }
+    }
+
+    function updateTimer() {
+        if (!isTimerRunning) {
+            startTimer();
+        } else {
+            const now = Date.now();
+            const timeSinceLastKey = now - lastKeyTime;
+
+            if (timeSinceLastKey > PAUSE_THRESHOLD) {
+                // Add pause duration to totalPausedTime
+                // We subtract the threshold because that part is considered "thinking time" or just a long pause?
+                // Actually, if I pause for 10s, I want to exclude that 10s.
+                // But if I pause for 1.9s, I include it.
+                // So if > 2s, we exclude the entire duration? Or just the excess?
+                // The prompt says "accounting for pauses and breaks".
+                // Let's exclude the entire duration of the pause if it exceeds the threshold, 
+                // effectively "stopping the clock" during the pause.
+                // But we need to keep the "thinking time" reasonable. 
+                // Let's say we exclude (timeSinceLastKey - PAUSE_THRESHOLD) to be generous, 
+                // or exclude the whole thing. 
+                // Let's exclude (timeSinceLastKey - PAUSE_THRESHOLD) so strict typing isn't penalized, 
+                // but long breaks are.
+                // Actually, simpler: just add to paused time.
+                totalPausedTime += (timeSinceLastKey - PAUSE_THRESHOLD);
+            }
+            lastKeyTime = now;
+        }
+    }
+
+    function resetTimer() {
+        startTime = null;
+        totalPausedTime = 0;
+        lastKeyTime = null;
+        isTimerRunning = false;
+        wpmDisplay.textContent = '0 WPM';
+    }
+
+    function calculateWPM(doc) {
+        if (!startTime) return 0;
+
+        const now = Date.now();
+        // If we are currently in a pause (haven't typed for > 2s), we shouldn't count that current pause yet 
+        // until the next key press? Or should we?
+        // If I stop typing now, my WPM should drop until I type again?
+        // No, if I stop, the timer keeps running until I type again, at which point we detect the pause.
+        // So for real-time display, we might want to show WPM based on *active* time.
+
+        // Let's use the lastKeyTime for the end of the interval if we are currently paused?
+        // No, standard WPM decays if you stop. 
+        // But the user wants to "account for pauses". 
+        // So if I stop for 10s, my WPM shouldn't drop to 0. It should stay at what it was.
+
+        let effectiveTimeEnd = now;
+        if (now - lastKeyTime > PAUSE_THRESHOLD) {
+            // We are currently in a pause.
+            // So effective time ends at lastKeyTime + threshold?
+            effectiveTimeEnd = lastKeyTime + PAUSE_THRESHOLD;
+        }
+
+        const durationMs = effectiveTimeEnd - startTime - totalPausedTime;
+        const durationMin = durationMs / 60000;
+
+        if (durationMin <= 0) return 0;
+
+        // Standard WPM = (All Typed Characters / 5) / Time (min)
+        // We use doc.currentIndex as proxy for characters typed correctly (since we only advance on correct)
+        const wpm = Math.round((doc.currentIndex / 5) / durationMin);
+        return wpm;
+    }
+
     // --- Typing Logic ---
 
     function handleTyping(e) {
@@ -277,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle Enter
         if (e.key === 'Enter') {
             if (targetChar === '\n') {
+                updateTimer(); // Update timer on valid key
                 advanceCursor(doc, charSpans);
             }
             return;
@@ -284,6 +378,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Normal typing
         if (typedChar.length === 1) {
+            updateTimer(); // Update timer on valid key attempt (even if wrong? No, usually WPM counts all keystrokes, but here we only advance on correct. Let's count time for all attempts but only advance for correct.)
+
             if (typedChar === targetChar) {
                 // Correct
                 charSpans[doc.currentIndex].classList.add('typed');
@@ -327,6 +423,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateProgressUI(doc) {
         const percentage = Math.round((doc.currentIndex / doc.content.length) * 100);
         progressText.textContent = `${percentage}%`;
+
+        const wpm = calculateWPM(doc);
+        wpmDisplay.textContent = `${wpm} WPM`;
     }
 
     function finishPractice() {

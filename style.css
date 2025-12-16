@@ -383,10 +383,18 @@ footer {
     font-size: 1.2rem;
     color: var(--accent-secondary);
     transition: opacity 0.3s;
+    display: flex;
+    gap: 1rem;
 }
 
 .progress-info:hover {
     opacity: 0.8;
+}
+
+#wpm-display {
+    color: var(--accent-primary);
+    border-left: 1px solid #3d3d3d;
+    padding-left: 1rem;
 }
 
 /* Adjust stats-bar since it's now empty or just has back button */
