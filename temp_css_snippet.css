@@ -1,0 +1,29 @@
+/* Fixed Progress Indicator */
+.progress-info {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: var(--card-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid #3d3d3d;
+    z-index: 100;
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    color: var(--accent-secondary);
+    transition: opacity 0.3s;
+}
+
+.progress-info:hover {
+    opacity: 0.8;
+}
+
+/* Adjust stats-bar since it's now empty or just has back button */
+.stats-bar {
+    justify-content: flex-start;
+    /* Was space-between */
+    border-bottom: none;
+    /* Optional: remove border if it looks weird */
+    margin-bottom: 1rem;
+}
