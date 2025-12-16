@@ -13,6 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const wpmDisplay = document.getElementById('wpm-display');
     const completionMessage = document.getElementById('completion-message');
     const restartBtn = document.getElementById('restart-btn');
+    const caseSensitiveToggle = document.getElementById('case-sensitive-toggle');
+    const punctuationToggle = document.getElementById('punctuation-toggle');
+
+    // Toggle state
+    let isCaseSensitive = true;
+    let includePunctuation = true;
 
     // State
     let documents = [];
@@ -51,6 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     startBtn.addEventListener('click', createDocument);
+
+    // Toggle event listeners
+    caseSensitiveToggle.addEventListener('change', (e) => {
+        isCaseSensitive = e.target.checked;
+    });
+
+    punctuationToggle.addEventListener('change', (e) => {
+        includePunctuation = e.target.checked;
+    });
 
     // Back button now acts as "Edit" or just return to input for new doc? 
     // Actually, for tabs, "Back" might not be needed if we have tabs. 
@@ -378,12 +393,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Normal typing
         if (typedChar.length === 1) {
-            updateTimer(); // Update timer on valid key attempt (even if wrong? No, usually WPM counts all keystrokes, but here we only advance on correct. Let's count time for all attempts but only advance for correct.)
+            updateTimer();
 
-            if (typedChar === targetChar) {
+            // Check if current character is punctuation and should be skipped
+            const isPunctuation = /[^\w\s]/.test(targetChar);
+            if (isPunctuation && !includePunctuation) {
+                // Skip punctuation - auto-advance
+                charSpans[doc.currentIndex].classList.add('typed', 'skipped');
+                advanceCursor(doc, charSpans);
+                // Re-check if next char should also be skipped
+                while (doc.currentIndex < doc.content.length) {
+                    const nextChar = doc.content[doc.currentIndex];
+                    if (/[^\w\s]/.test(nextChar) && !includePunctuation) {
+                        charSpans[doc.currentIndex].classList.add('typed', 'skipped');
+                        advanceCursor(doc, charSpans);
+                    } else {
+                        break;
+                    }
+                }
+                return;
+            }
+
+            // Compare characters
+            let isCorrect = false;
+            if (isCaseSensitive) {
+                isCorrect = typedChar === targetChar;
+            } else {
+                isCorrect = typedChar.toLowerCase() === targetChar.toLowerCase();
+            }
+
+            if (isCorrect) {
                 // Correct
                 charSpans[doc.currentIndex].classList.add('typed');
                 advanceCursor(doc, charSpans);
+
+                // Skip following punctuation if toggle is off
+                while (!includePunctuation && doc.currentIndex < doc.content.length) {
+                    const nextChar = doc.content[doc.currentIndex];
+                    if (/[^\w\s]/.test(nextChar)) {
+                        charSpans[doc.currentIndex].classList.add('typed', 'skipped');
+                        advanceCursor(doc, charSpans);
+                    } else {
+                        break;
+                    }
+                }
             } else {
                 // Incorrect
                 const currentSpan = charSpans[doc.currentIndex];
