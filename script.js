@@ -16,6 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const caseSensitiveToggle = document.getElementById('case-sensitive-toggle');
     const punctuationToggle = document.getElementById('punctuation-toggle');
 
+    // Auth DOM Elements
+    const signInBtn = document.getElementById('sign-in-btn');
+    const signOutBtn = document.getElementById('sign-out-btn');
+    const userProfile = document.getElementById('user-profile');
+    const userAvatar = document.getElementById('user-avatar');
+    const userName = document.getElementById('user-name');
+    const syncStatus = document.getElementById('sync-status');
+
     // Toggle state
     let isCaseSensitive = true;
     let includePunctuation = true;
@@ -24,24 +32,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let documents = [];
     let activeDocId = null;
 
+    // Firebase State
+    let firebaseApp = null;
+    let auth = null;
+    let db = null;
+    let currentUser = null;
+    let isSyncing = false;
+
     // WPM State
     let startTime = null;
     let totalPausedTime = 0;
     let lastKeyTime = null;
     let isTimerRunning = false;
-    let typedEntries = 0; // Count actual keystrokes for more accurate WPM? Or just use index? Standard is (chars / 5) / min
+    let typedEntries = 0;
 
     // Constants
     const STORAGE_KEY = 'typpi_documents_v1';
-    const PAUSE_THRESHOLD = 2000; // 2 seconds
+    const FIREBASE_CONFIG_KEY = 'typpi_firebase_config';
+    const PAUSE_THRESHOLD = 2000;
+
+    // Firebase Configuration
+    const DEFAULT_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyCnn6nutLLdj4K4kC9YUeuDEIjS8LevlGQ",
+        authDomain: "typpi-1519a.firebaseapp.com",
+        projectId: "typpi-1519a",
+        storageBucket: "typpi-1519a.firebasestorage.app",
+        messagingSenderId: "843068556654",
+        appId: "1:843068556654:web:478c5d23e41056859c6d7f"
+    };
 
     // Initialize
     loadDocuments();
     renderTabs();
+    initFirebase();
 
     if (documents.length > 0) {
-        // Just render tabs, don't auto-switch
-        // This ensures "Start Practice" is visible for new sessions
         renderTabs();
         showInputScreen();
     } else {
@@ -51,14 +76,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Listeners
     newTabBtn.addEventListener('click', () => {
         activeDocId = null;
-        renderTabs(); // Clear active state visually
+        renderTabs();
         showInputScreen();
         resetTimer();
     });
 
     startBtn.addEventListener('click', createDocument);
 
-    // Toggle event listeners
     caseSensitiveToggle.addEventListener('change', (e) => {
         isCaseSensitive = e.target.checked;
     });
@@ -67,10 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         includePunctuation = e.target.checked;
     });
 
-    // Back button now acts as "Edit" or just return to input for new doc? 
-    // Actually, for tabs, "Back" might not be needed if we have tabs. 
-    // Let's repurpose it to "Edit Text" or hide it if we want strict practice.
-    // For now, let's hide it in tab mode to keep it simple, or make it "Delete"
     backBtn.style.display = 'none';
 
     restartBtn.addEventListener('click', () => {
@@ -93,6 +113,257 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
         }
     });
+
+    // Auth Event Listeners
+    if (signInBtn) {
+        signInBtn.addEventListener('click', signInWithGoogle);
+    }
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', handleSignOut);
+    }
+
+    // --- Firebase Initialization ---
+
+    function initFirebase() {
+        // Wait for Firebase modules to be ready
+        if (window.firebaseModules) {
+            setupFirebase();
+        } else {
+            window.addEventListener('firebase-ready', setupFirebase);
+        }
+    }
+
+    function setupFirebase() {
+        const config = getFirebaseConfig();
+        if (!config.apiKey) {
+            console.log('Firebase not configured. Cloud sync disabled.');
+            return;
+        }
+
+        try {
+            const { initializeApp, getAuth, onAuthStateChanged, getFirestore } = window.firebaseModules;
+
+            firebaseApp = initializeApp(config);
+            auth = getAuth(firebaseApp);
+            db = getFirestore(firebaseApp);
+
+            // Listen for auth state changes
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    onUserSignedIn(user);
+                } else {
+                    currentUser = null;
+                    onUserSignedOut();
+                }
+            });
+
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+        }
+    }
+
+    function getFirebaseConfig() {
+        // Check localStorage for saved config
+        const savedConfig = localStorage.getItem(FIREBASE_CONFIG_KEY);
+        if (savedConfig) {
+            try {
+                return JSON.parse(savedConfig);
+            } catch (e) {
+                console.error('Error parsing saved Firebase config');
+            }
+        }
+        return DEFAULT_FIREBASE_CONFIG;
+    }
+
+    // --- Authentication ---
+
+    async function signInWithGoogle() {
+        if (!auth) {
+            alert('Firebase not configured. Please add your Firebase config to enable cloud sync.\n\nFor now, your notes are saved locally in your browser.');
+            promptForFirebaseConfig();
+            return;
+        }
+
+        try {
+            const { signInWithPopup, GoogleAuthProvider } = window.firebaseModules;
+            const provider = new GoogleAuthProvider();
+            await signInWithPopup(auth, provider);
+        } catch (error) {
+            console.error('Sign in error:', error);
+            if (error.code !== 'auth/popup-closed-by-user') {
+                alert('Sign in failed: ' + error.message);
+            }
+        }
+    }
+
+    async function handleSignOut() {
+        if (!auth) return;
+
+        try {
+            const { signOut } = window.firebaseModules;
+            await signOut(auth);
+        } catch (error) {
+            console.error('Sign out error:', error);
+        }
+    }
+
+    function onUserSignedIn(user) {
+        console.log('User signed in:', user.displayName);
+
+        // Update UI
+        if (signInBtn) signInBtn.classList.add('hidden');
+        if (userProfile) userProfile.classList.remove('hidden');
+        if (userAvatar) userAvatar.src = user.photoURL || '';
+        if (userName) userName.textContent = user.displayName || user.email;
+
+        // Sync documents
+        syncFromCloud();
+    }
+
+    function onUserSignedOut() {
+        console.log('User signed out');
+
+        // Update UI
+        if (signInBtn) signInBtn.classList.remove('hidden');
+        if (userProfile) userProfile.classList.add('hidden');
+    }
+
+    // --- Cloud Sync ---
+
+    async function syncFromCloud() {
+        if (!db || !currentUser || isSyncing) return;
+
+        isSyncing = true;
+        updateSyncStatus('syncing');
+
+        try {
+            const { collection, getDocs } = window.firebaseModules;
+            const docsRef = collection(db, 'users', currentUser.uid, 'documents');
+            const snapshot = await getDocs(docsRef);
+
+            const cloudDocs = [];
+            snapshot.forEach((doc) => {
+                cloudDocs.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Merge cloud docs with local docs
+            mergeDocuments(cloudDocs);
+
+            updateSyncStatus('synced');
+        } catch (error) {
+            console.error('Sync from cloud error:', error);
+            updateSyncStatus('offline');
+        } finally {
+            isSyncing = false;
+        }
+    }
+
+    async function syncToCloud(doc) {
+        if (!db || !currentUser) return;
+
+        updateSyncStatus('syncing');
+
+        try {
+            const { doc: docRef, setDoc, serverTimestamp } = window.firebaseModules;
+            const documentRef = docRef(db, 'users', currentUser.uid, 'documents', doc.id);
+
+            await setDoc(documentRef, {
+                ...doc,
+                updatedAt: serverTimestamp()
+            });
+
+            updateSyncStatus('synced');
+        } catch (error) {
+            console.error('Sync to cloud error:', error);
+            updateSyncStatus('offline');
+        }
+    }
+
+    async function deleteFromCloud(docId) {
+        if (!db || !currentUser) return;
+
+        try {
+            const { doc: docRef, deleteDoc } = window.firebaseModules;
+            const documentRef = docRef(db, 'users', currentUser.uid, 'documents', docId);
+            await deleteDoc(documentRef);
+        } catch (error) {
+            console.error('Delete from cloud error:', error);
+        }
+    }
+
+    function mergeDocuments(cloudDocs) {
+        // Simple merge: cloud docs take precedence for same ID
+        // New local docs are kept
+        const mergedMap = new Map();
+
+        // Add local docs first
+        documents.forEach(doc => {
+            mergedMap.set(doc.id, doc);
+        });
+
+        // Cloud docs override or add
+        cloudDocs.forEach(cloudDoc => {
+            const localDoc = mergedMap.get(cloudDoc.id);
+            if (!localDoc || (cloudDoc.updatedAt && (!localDoc.updatedAt || cloudDoc.updatedAt > localDoc.updatedAt))) {
+                mergedMap.set(cloudDoc.id, cloudDoc);
+            }
+        });
+
+        documents = Array.from(mergedMap.values());
+        saveDocuments();
+        renderTabs();
+
+        // Push any local-only docs to cloud
+        documents.forEach(doc => {
+            const inCloud = cloudDocs.find(cd => cd.id === doc.id);
+            if (!inCloud) {
+                syncToCloud(doc);
+            }
+        });
+    }
+
+    function updateSyncStatus(status) {
+        if (!syncStatus) return;
+
+        syncStatus.className = 'sync-status';
+        switch (status) {
+            case 'syncing':
+                syncStatus.textContent = 'Syncing...';
+                syncStatus.classList.add('syncing');
+                break;
+            case 'synced':
+                syncStatus.textContent = 'Synced ✓';
+                break;
+            case 'offline':
+                syncStatus.textContent = 'Offline';
+                syncStatus.classList.add('offline');
+                break;
+        }
+    }
+
+    function promptForFirebaseConfig() {
+        const configStr = prompt(
+            'Enter your Firebase config JSON (from Firebase Console > Project Settings > Your apps > Config):\n\n' +
+            'Example: {"apiKey":"...", "authDomain":"...", "projectId":"...", ...}'
+        );
+
+        if (configStr) {
+            try {
+                const config = JSON.parse(configStr);
+                if (config.apiKey && config.projectId) {
+                    localStorage.setItem(FIREBASE_CONFIG_KEY, configStr);
+                    alert('Firebase config saved! Reloading...');
+                    window.location.reload();
+                } else {
+                    alert('Invalid config. Must include apiKey and projectId.');
+                }
+            } catch (e) {
+                alert('Invalid JSON format. Please copy the config object from Firebase Console.');
+            }
+        }
+    }
 
     // --- Core Logic ---
 
@@ -124,16 +395,21 @@ document.addEventListener('DOMContentLoaded', () => {
             title: text.slice(0, 20) + (text.length > 20 ? '...' : ''),
             content: text,
             currentIndex: 0,
-            isActive: true
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
         };
 
-        // Deactivate others
         documents.forEach(d => d.isActive = false);
-
         documents.push(newDoc);
         saveDocuments();
 
-        sourceText.value = ''; // Clear input
+        // Sync to cloud if signed in
+        if (currentUser) {
+            syncToCloud(newDoc);
+        }
+
+        sourceText.value = '';
         switchTab(newDoc.id);
     }
 
@@ -141,7 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
         activeDocId = id;
         resetTimer();
 
-        // Update active state in data
         documents.forEach(d => d.isActive = (d.id === id));
         saveDocuments();
 
@@ -153,13 +428,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeTab(e, id) {
-        // e.stopPropagation(); // Prevent switching to tab when closing
-
-        // const confirmDelete = confirm('Delete this note?');
-        // if (!confirmDelete) return;
-
         documents = documents.filter(d => d.id !== id);
         saveDocuments();
+
+        // Delete from cloud if signed in
+        if (currentUser) {
+            deleteFromCloud(id);
+        }
 
         if (documents.length === 0) {
             activeDocId = null;
@@ -167,7 +442,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showInputScreen();
             resetTimer();
         } else if (activeDocId === id) {
-            // Switch to last available
             switchTab(documents[documents.length - 1].id);
         } else {
             renderTabs();
@@ -177,7 +451,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Rendering ---
 
     function renderTabs() {
-        // Remove existing tabs (keep new button)
         const existingTabs = tabBar.querySelectorAll('.tab-item');
         existingTabs.forEach(t => t.remove());
 
@@ -209,7 +482,6 @@ document.addEventListener('DOMContentLoaded', () => {
         inputScreen.classList.remove('hidden');
         inputScreen.classList.add('active');
 
-        // Focus textarea
         sourceText.focus();
     }
 
@@ -225,7 +497,6 @@ document.addEventListener('DOMContentLoaded', () => {
         completionMessage.classList.add('hidden');
         typingArea.classList.remove('hidden');
 
-        // Render text
         typingArea.innerHTML = '';
         const chars = doc.content.split('');
 
@@ -248,7 +519,6 @@ document.addEventListener('DOMContentLoaded', () => {
             typingArea.appendChild(span);
         });
 
-        // Scroll to current
         const currentSpan = typingArea.querySelector('.char.current');
         if (currentSpan) {
             setTimeout(() => scrollToCursor(currentSpan), 10);
@@ -258,7 +528,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateProgressUI(doc);
 
-        // Remove focus from buttons so Space doesn't trigger them
         if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
         }
@@ -284,20 +553,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeSinceLastKey = now - lastKeyTime;
 
             if (timeSinceLastKey > PAUSE_THRESHOLD) {
-                // Add pause duration to totalPausedTime
-                // We subtract the threshold because that part is considered "thinking time" or just a long pause?
-                // Actually, if I pause for 10s, I want to exclude that 10s.
-                // But if I pause for 1.9s, I include it.
-                // So if > 2s, we exclude the entire duration? Or just the excess?
-                // The prompt says "accounting for pauses and breaks".
-                // Let's exclude the entire duration of the pause if it exceeds the threshold, 
-                // effectively "stopping the clock" during the pause.
-                // But we need to keep the "thinking time" reasonable. 
-                // Let's say we exclude (timeSinceLastKey - PAUSE_THRESHOLD) to be generous, 
-                // or exclude the whole thing. 
-                // Let's exclude (timeSinceLastKey - PAUSE_THRESHOLD) so strict typing isn't penalized, 
-                // but long breaks are.
-                // Actually, simpler: just add to paused time.
                 totalPausedTime += (timeSinceLastKey - PAUSE_THRESHOLD);
             }
             lastKeyTime = now;
@@ -316,21 +571,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!startTime) return 0;
 
         const now = Date.now();
-        // If we are currently in a pause (haven't typed for > 2s), we shouldn't count that current pause yet 
-        // until the next key press? Or should we?
-        // If I stop typing now, my WPM should drop until I type again?
-        // No, if I stop, the timer keeps running until I type again, at which point we detect the pause.
-        // So for real-time display, we might want to show WPM based on *active* time.
-
-        // Let's use the lastKeyTime for the end of the interval if we are currently paused?
-        // No, standard WPM decays if you stop. 
-        // But the user wants to "account for pauses". 
-        // So if I stop for 10s, my WPM shouldn't drop to 0. It should stay at what it was.
-
         let effectiveTimeEnd = now;
         if (now - lastKeyTime > PAUSE_THRESHOLD) {
-            // We are currently in a pause.
-            // So effective time ends at lastKeyTime + threshold?
             effectiveTimeEnd = lastKeyTime + PAUSE_THRESHOLD;
         }
 
@@ -339,8 +581,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (durationMin <= 0) return 0;
 
-        // Standard WPM = (All Typed Characters / 5) / Time (min)
-        // We use doc.currentIndex as proxy for characters typed correctly (since we only advance on correct)
         const wpm = Math.round((doc.currentIndex / 5) / durationMin);
         return wpm;
     }
@@ -353,7 +593,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const doc = documents.find(d => d.id === activeDocId);
         if (!doc) return;
 
-        // Ignore modifier keys
         if (e.key === 'Shift' || e.key === 'Control' || e.key === 'Alt' || e.key === 'Meta') return;
 
         const charSpans = typingArea.querySelectorAll('.char');
@@ -362,16 +601,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetChar = doc.content[doc.currentIndex];
         const typedChar = e.key;
 
-        // Handle Backspace
         if (e.key === 'Backspace') {
             if (doc.currentIndex > 0) {
-                // Reset current
                 if (charSpans[doc.currentIndex]) charSpans[doc.currentIndex].classList.remove('current');
 
                 doc.currentIndex--;
                 saveDocuments();
 
-                // Update new current
                 const prevSpan = charSpans[doc.currentIndex];
                 prevSpan.classList.remove('typed', 'error');
                 prevSpan.classList.add('current');
@@ -382,26 +618,21 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Handle Enter
         if (e.key === 'Enter') {
             if (targetChar === '\n') {
-                updateTimer(); // Update timer on valid key
+                updateTimer();
                 advanceCursor(doc, charSpans);
             }
             return;
         }
 
-        // Normal typing
         if (typedChar.length === 1) {
             updateTimer();
 
-            // Check if current character is punctuation and should be skipped
             const isPunctuation = /[^\w\s]/.test(targetChar);
             if (isPunctuation && !includePunctuation) {
-                // Skip punctuation - auto-advance
                 charSpans[doc.currentIndex].classList.add('typed', 'skipped');
                 advanceCursor(doc, charSpans);
-                // Re-check if next char should also be skipped
                 while (doc.currentIndex < doc.content.length) {
                     const nextChar = doc.content[doc.currentIndex];
                     if (/[^\w\s]/.test(nextChar) && !includePunctuation) {
@@ -414,7 +645,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Compare characters
             let isCorrect = false;
             if (isCaseSensitive) {
                 isCorrect = typedChar === targetChar;
@@ -423,11 +653,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (isCorrect) {
-                // Correct
                 charSpans[doc.currentIndex].classList.add('typed');
                 advanceCursor(doc, charSpans);
 
-                // Skip following punctuation if toggle is off
                 while (!includePunctuation && doc.currentIndex < doc.content.length) {
                     const nextChar = doc.content[doc.currentIndex];
                     if (/[^\w\s]/.test(nextChar)) {
@@ -438,7 +666,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } else {
-                // Incorrect
                 const currentSpan = charSpans[doc.currentIndex];
                 currentSpan.classList.add('error');
                 setTimeout(() => currentSpan.classList.remove('error'), 200);
@@ -447,21 +674,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function advanceCursor(doc, charSpans) {
-        // Remove current from old
         charSpans[doc.currentIndex].classList.remove('current');
 
         doc.currentIndex++;
+        doc.updatedAt = new Date().toISOString();
         saveDocuments();
         updateProgressUI(doc);
 
+        // Sync progress to cloud periodically (every 10%)
+        if (currentUser && doc.currentIndex % Math.ceil(doc.content.length / 10) === 0) {
+            syncToCloud(doc);
+        }
+
         if (doc.currentIndex < doc.content.length) {
-            // Add current to new
             const nextSpan = charSpans[doc.currentIndex];
             nextSpan.classList.add('current');
             scrollToCursor(nextSpan);
         } else {
-            // Finished
             finishPractice();
+            if (currentUser) {
+                syncToCloud(doc);
+            }
         }
     }
 

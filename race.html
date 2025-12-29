@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V07LP8BDDJ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-V07LP8BDDJ');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typpi - Ghost Race Mode</title>
+    <link rel="icon" type="image/png" href="typpi_logo.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="typpi_logo_darkmode.png" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="race.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="dot-grid">
+        <div class="dot-grid__wrap">
+            <canvas class="dot-grid__canvas"></canvas>
+        </div>
+    </div>
+
+    <div class="app-container race-container">
+        <a href="index.html" class="back-link">← Back to Typpi</a>
+
+        <header class="race-header">
+            <h1>🏁 Ghost Race</h1>
+            <p>Race against your personal best</p>
+        </header>
+
+        <main class="race-main">
+            <!-- Document Selection Screen -->
+            <section id="race-select-screen" class="screen active">
+                <div class="select-wrapper">
+                    <label for="document-select">Select a document to race:</label>
+                    <select id="document-select">
+                        <option value="">-- Choose a document --</option>
+                    </select>
+                </div>
+
+                <div id="ghost-info" class="ghost-info hidden">
+                    <div class="ghost-stat">
+                        <span class="stat-label">Best Time</span>
+                        <span id="best-time" class="stat-value">--</span>
+                    </div>
+                    <div class="ghost-stat">
+                        <span class="stat-label">Best WPM</span>
+                        <span id="best-wpm" class="stat-value">--</span>
+                    </div>
+                </div>
+
+                <div id="no-ghost-message" class="no-ghost-message hidden">
+                    <p>No ghost recorded yet. Complete this document to set your first record!</p>
+                </div>
+
+                <div class="actions">
+                    <button id="start-race-btn" class="btn primary" disabled>Start Race</button>
+                </div>
+            </section>
+
+            <!-- Racing Screen -->
+            <section id="race-screen" class="screen hidden">
+                <div class="progress-bars">
+                    <div class="progress-row ghost-row">
+                        <span class="progress-label">👻 Ghost</span>
+                        <div class="progress-bar-container">
+                            <div id="ghost-progress-bar" class="progress-bar ghost-bar"></div>
+                        </div>
+                        <span id="ghost-percent" class="progress-percent">0%</span>
+                        <span id="ghost-wpm" class="progress-wpm">0 WPM</span>
+                    </div>
+                    <div class="progress-row player-row">
+                        <span class="progress-label">🏃 You</span>
+                        <div class="progress-bar-container">
+                            <div id="player-progress-bar" class="progress-bar player-bar"></div>
+                        </div>
+                        <span id="player-percent" class="progress-percent">0%</span>
+                        <span id="player-wpm" class="progress-wpm">0 WPM</span>
+                    </div>
+                </div>
+
+                <div id="race-typing-area" class="typing-area">
+                    <!-- Text will be injected here -->
+                </div>
+            </section>
+
+            <!-- Results Screen -->
+            <section id="race-results-screen" class="screen hidden">
+                <div id="result-message" class="result-message">
+                    <!-- Win/Lose message -->
+                </div>
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <span class="stat-label">Your Time</span>
+                        <span id="result-time" class="stat-value">--</span>
+                    </div>
+                    <div class="result-stat">
+                        <span class="stat-label">Your WPM</span>
+                        <span id="result-wpm" class="stat-value">--</span>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button id="race-again-btn" class="btn primary">Race Again</button>
+                    <button id="back-to-select-btn" class="btn secondary">Choose Different Document</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="race.js"></script>
+    <script src="dot-grid.js"></script>
+</body>
+
+</html>
