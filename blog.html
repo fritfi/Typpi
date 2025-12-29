@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V07LP8BDDJ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-V07LP8BDDJ');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1457003839992011"
+        crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Typpi Blog - Articles, tips, and resources to help you improve your typing speed and study habits.">
+    <title>Blog - Typpi</title>
+
+    <link rel="icon" type="image/png" href="typpi_logo.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="typpi_logo_darkmode.png" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="shared-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .blog-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #3d3d3d;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-primary, #B39DDB);
+        }
+
+        .blog-card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .blog-category {
+            font-size: 0.8rem;
+            color: var(--accent-secondary, #80CBC4);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .blog-title {
+            font-size: 1.25rem;
+            margin: 0 0 0.75rem 0;
+            color: var(--text-primary, #e0e0e0);
+            line-height: 1.4;
+        }
+
+        .blog-excerpt {
+            font-size: 0.95rem;
+            color: var(--text-secondary, #a0a0a0);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-muted, #666);
+            border-top: 1px solid #3d3d3d;
+            padding-top: 1rem;
+            margin-top: auto;
+        }
+
+        .read-more {
+            color: var(--accent-primary, #B39DDB);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .read-more::after {
+            content: "→";
+            transition: transform 0.2s;
+        }
+
+        .blog-card:hover .read-more::after {
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+
+<body data-page="blog" class="content-page">
+    <div class="content-container">
+        <div class="content-header">
+            <h1>Typpi Blog</h1>
+            <p class="subtitle">Insights on typing, learning, and productivity</p>
+        </div>
+
+        <div class="content-body">
+            <div class="blog-grid">
+                <!-- Article 1 -->
+                <a href="blog/typing-practice-benefits.html" class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-category">Learning Science</span>
+                        <h2 class="blog-title">The Cognitive Benefits of Active Typing Practice</h2>
+                        <p class="blog-excerpt">Discover how retyping your notes can significantly improve information
+                            retention and understanding compared to passive reading.</p>
+                        <div class="blog-meta">
+                            <span>5 min read</span>
+                            <span class="read-more">Read Article</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article 2 -->
+                <a href="blog/improve-typing-speed.html" class="blog-card">
+                    <div class="blog-card-content">
+                        <span class="blog-category">Skill Building</span>
+                        <h2 class="blog-title">How to Improve Your Typing Speed: A Comprehensive Guide</h2>
+                        <p class="blog-excerpt">Master the art of touch typing with these proven techniques, posture
+                            tips, and practice routines to boost your WPM.</p>
+                        <div class="blog-meta">
+                            <span>7 min read</span>
+                            <span class="read-more">Read Article</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation.js"></script>
+</body>
+
+</html>
