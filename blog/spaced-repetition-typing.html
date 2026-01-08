@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V07LP8BDDJ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-V07LP8BDDJ');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1457003839992011"
+        crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Learn how combining spaced repetition with active typing can supercharge your study sessions and improve long-term retention.">
+    <title>Spaced Repetition and Typing: A Powerful Duo - Typpi Blog</title>
+
+    <link rel="icon" type="image/png" href="../typpi_logo.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="../typpi_logo_darkmode.png" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../shared-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body data-page="blog" class="content-page article-page">
+    <div class="content-container">
+        <article class="blog-post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span class="post-category">Learning Science</span>
+                    <span class="post-date">January 8, 2026</span>
+                </div>
+                <h1>Spaced Repetition and Typing: A Powerful Duo</h1>
+                <p class="post-subtitle">How to hack your brain's forgetting curve using simple tools.</p>
+            </header>
+
+            <div class="post-content">
+                <p>We've all been there: you spend hours cramming for an exam, feel confident, and then a week later,
+                    the information has vanished. This is due to the "Forgetting Curve," a concept discovered by Hermann
+                    Ebbinghaus. But there's a solution: <strong>Spaced Repetition</strong>.</p>
+
+                <h2>What is Spaced Repetition?</h2>
+                <p>Spaced repetition is a learning technique where you review material at increasing intervals. Instead
+                    of reviewing your notes five times in one day, you review them once today, once tomorrow, once in
+                    three days, and once next week.</p>
+                <p>This forces your brain to work harder to retrieve the information just as it's about to be forgotten,
+                    which strengthens the memory trace.</p>
+
+                <h2>Adding Active Typing to the Mix</h2>
+                <p>While spaced repetition is usually associated with flashcards (like Anki), combining it with
+                    <strong>active typing</strong> can be even more effective for understanding complex concepts.</p>
+                <p>Flashcards are great for isolated facts, but typing out full paragraphs or definitions forces you to
+                    engage with the <em>structure</em> and <em>context</em> of the information.</p>
+
+                <h3>How to Implement This Strategy</h3>
+                <ol>
+                    <li><strong>Day 1:</strong> Type out your lecture notes or summary in Typpi. Focus on accuracy and
+                        understanding.</li>
+                    <li><strong>Day 2:</strong> Re-type the most difficult sections. If you make mistakes, slow down.
+                    </li>
+                    <li><strong>Day 4:</strong> Try to type the key concepts from memory first, then check your source
+                        text and type it out in Typpi to correct yourself.</li>
+                    <li><strong>Day 7:</strong> Do a final "speed run" of the material to ensure fluency.</li>
+                </ol>
+
+                <h2>Why It Works</h2>
+                <p>By re-typing the material at spaced intervals, you are combining <strong>motor memory</strong> (from
+                    typing) with <strong>cognitive recall</strong> (from spaced repetition). This dual-coding approach
+                    creates multiple pathways in your brain to access the same information.</p>
+
+                <h2>Conclusion</h2>
+                <p>Don't just read your notes over and over. Type them. Space them out. Challenge your brain. You'll be
+                    surprised at how much more you remember with less total study time.</p>
+            </div>
+
+            <footer class="post-footer">
+                <a href="../blog.html" class="back-link">← Back to Blog</a>
+            </footer>
+        </article>
+    </div>
+
+    <script>
+        // Navigation adjustment script
+        document.addEventListener('DOMContentLoaded', () => {
+            const allLinks = document.querySelectorAll('a');
+            allLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('../') && !href.startsWith('mailto:')) {
+                    link.setAttribute('href', '../' + href);
+                }
+            });
+            const logoImg = document.querySelector('.nav-logo img');
+            if (logoImg) {
+                const src = logoImg.getAttribute('src');
+                if (src && !src.startsWith('../') && !src.startsWith('http')) {
+                    logoImg.setAttribute('src', '../' + src);
+                }
+            }
+        });
+    </script>
+    <script src="../navigation.js"></script>
+</body>
+
+</html>

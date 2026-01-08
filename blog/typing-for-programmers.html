@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V07LP8BDDJ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-V07LP8BDDJ');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1457003839992011"
+        crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Why typing speed matters for developers and how to practice coding syntax effectively.">
+    <title>Typing for Programmers: Speed vs. Thought - Typpi Blog</title>
+
+    <link rel="icon" type="image/png" href="../typpi_logo.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="../typpi_logo_darkmode.png" media="(prefers-color-scheme: dark)">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../shared-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body data-page="blog" class="content-page article-page">
+    <div class="content-container">
+        <article class="blog-post">
+            <header class="post-header">
+                <div class="post-meta">
+                    <span class="post-category">Skill Building</span>
+                    <span class="post-date">January 8, 2026</span>
+                </div>
+                <h1>Typing for Programmers: Speed vs. Thought</h1>
+                <p class="post-subtitle">Does typing speed actually matter when your bottleneck is thinking?</p>
+            </header>
+
+            <div class="post-content">
+                <p>A common argument in the software development world is that typing speed doesn't matter because
+                    "programmers spend more time thinking than typing." While the second part is true, the conclusion is
+                    flawed.</p>
+
+                <h2>The "Brain-to-Code" Latency</h2>
+                <p>Think of your typing speed as the bandwidth between your brain and the computer. Even if you spend
+                    90% of your time thinking, when you finally have the solution, you want to get it into the editor as
+                    quickly as possible.</p>
+                <p>If you type slowly, you risk losing your train of thought. High latency interrupts your "flow state."
+                </p>
+
+                <h2>Special Characters are the Enemy</h2>
+                <p>Standard typing tests use prose. Programming uses symbols: `{} [] () ; : " ' ! = + - * /`. </p>
+                <p>Many developers can type 80 WPM in English but drop to 40 WPM when writing code because they have to
+                    hunt for these symbols. This is where targeted practice comes in.</p>
+
+                <h2>How to Practice Coding Syntax</h2>
+                <p>Don't just practice with "The quick brown fox." Use Typpi to practice with actual code snippets.</p>
+                <ul>
+                    <li><strong>Paste a function:</strong> Take a complex function from your codebase and paste it into
+                        Typpi.</li>
+                    <li><strong>Turn on Punctuation:</strong> Make sure the punctuation toggle is ON.</li>
+                    <li><strong>Focus on the symbols:</strong> Pay attention to which finger you use for `{` or `_`. Is
+                        it consistent?</li>
+                </ul>
+
+                <h2>Conclusion</h2>
+                <p>You don't need to type 150 WPM to be a great developer. But if you can type 60-80 WPM comfortably
+                    including special characters, you remove a significant layer of friction between your ideas and your
+                    reality.</p>
+            </div>
+
+            <footer class="post-footer">
+                <a href="../blog.html" class="back-link">← Back to Blog</a>
+            </footer>
+        </article>
+    </div>
+
+    <script>
+        // Navigation adjustment script
+        document.addEventListener('DOMContentLoaded', () => {
+            const allLinks = document.querySelectorAll('a');
+            allLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('../') && !href.startsWith('mailto:')) {
+                    link.setAttribute('href', '../' + href);
+                }
+            });
+            const logoImg = document.querySelector('.nav-logo img');
+            if (logoImg) {
+                const src = logoImg.getAttribute('src');
+                if (src && !src.startsWith('../') && !src.startsWith('http')) {
+                    logoImg.setAttribute('src', '../' + src);
+                }
+            }
+        });
+    </script>
+    <script src="../navigation.js"></script>
+</body>
+
+</html>

@@ -1,29 +1,84 @@
-/* Fixed Progress Indicator */
-.progress-info {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background-color: var(--card-bg);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    border: 1px solid #3d3d3d;
-    z-index: 100;
-    font-family: var(--font-mono);
-    font-size: 1.2rem;
-    color: var(--accent-secondary);
-    transition: opacity 0.3s;
+/* Info Content Sections */
+.info-content {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--text-secondary);
 }
 
-.progress-info:hover {
-    opacity: 0.8;
+.info-section {
+    margin-bottom: 3rem;
 }
 
-/* Adjust stats-bar since it's now empty or just has back button */
-.stats-bar {
-    justify-content: flex-start;
-    /* Was space-between */
-    border-bottom: none;
-    /* Optional: remove border if it looks weird */
+.info-section h2 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.info-section p {
+    line-height: 1.6;
     margin-bottom: 1rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.step-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.step-number {
+    width: 32px;
+    height: 32px;
+    background: var(--accent-primary);
+    color: #000;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+}
+
+.step-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.step-card p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.features-list li {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-secondary);
+}
+
+.features-list strong {
+    color: var(--text-primary);
 }
