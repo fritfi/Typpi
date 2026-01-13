@@ -31,21 +31,24 @@ body {
     background-color: var(--bg-color);
     color: var(--text-primary);
     font-family: var(--font-sans);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    overflow-x: hidden;
+    padding: 2rem 0;
 }
 
 .app-container {
     width: 100%;
     max-width: 900px;
-    height: 90vh;
+    min-height: 90vh;
     display: flex;
     flex-direction: column;
     padding: 2rem;
     position: relative;
 }
+
 
 .corner-logo {
     position: absolute;
@@ -259,16 +262,19 @@ header h1 {
 
 header p {
     color: var(--text-secondary);
-}
 
-main {
-    flex: 1;
-    background-color: var(--card-bg);
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    display: flex;
-    flex-direction: column;
+    main {
+        flex: 0 0 70vh;
+        background-color: var(--card-bg);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        margin-bottom: 4rem;
+    }
+
     overflow: hidden;
 }
 
@@ -599,88 +605,89 @@ footer {
     width: 100%;
     height: 100%;
     pointer-events: none;
-}/ *   I n f o   C o n t e n t   S e c t i o n s   * /  
- . i n f o - c o n t e n t   {  
-         m a r g i n - t o p :   4 r e m ;  
-         p a d d i n g - t o p :   2 r e m ;  
-         b o r d e r - t o p :   1 p x   s o l i d   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 1 ) ;  
-         m a x - w i d t h :   8 0 0 p x ;  
-         m a r g i n - l e f t :   a u t o ;  
-         m a r g i n - r i g h t :   a u t o ;  
-         c o l o r :   v a r ( - - t e x t - s e c o n d a r y ) ;  
- }  
-  
- . i n f o - s e c t i o n   {  
-         m a r g i n - b o t t o m :   3 r e m ;  
- }  
-  
- . i n f o - s e c t i o n   h 2   {  
-         c o l o r :   v a r ( - - t e x t - p r i m a r y ) ;  
-         f o n t - s i z e :   1 . 5 r e m ;  
-         m a r g i n - b o t t o m :   1 . 5 r e m ;  
-         t e x t - a l i g n :   c e n t e r ;  
- }  
-  
- . i n f o - s e c t i o n   p   {  
-         l i n e - h e i g h t :   1 . 6 ;  
-         m a r g i n - b o t t o m :   1 r e m ;  
- }  
-  
- . s t e p s - g r i d   {  
-         d i s p l a y :   g r i d ;  
-         g r i d - t e m p l a t e - c o l u m n s :   r e p e a t ( a u t o - f i t ,   m i n m a x ( 2 0 0 p x ,   1 f r ) ) ;  
-         g a p :   1 . 5 r e m ;  
-         m a r g i n - t o p :   1 . 5 r e m ;  
- }  
-  
- . s t e p - c a r d   {  
-         b a c k g r o u n d :   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 0 3 ) ;  
-         p a d d i n g :   1 . 5 r e m ;  
-         b o r d e r - r a d i u s :   1 2 p x ;  
-         b o r d e r :   1 p x   s o l i d   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 0 5 ) ;  
-         t e x t - a l i g n :   c e n t e r ;  
- }  
-  
- . s t e p - n u m b e r   {  
-         w i d t h :   3 2 p x ;  
-         h e i g h t :   3 2 p x ;  
-         b a c k g r o u n d :   v a r ( - - a c c e n t - p r i m a r y ) ;  
-         c o l o r :   # 0 0 0 ;  
-         f o n t - w e i g h t :   b o l d ;  
-         b o r d e r - r a d i u s :   5 0 % ;  
-         d i s p l a y :   f l e x ;  
-         a l i g n - i t e m s :   c e n t e r ;  
-         j u s t i f y - c o n t e n t :   c e n t e r ;  
-         m a r g i n :   0   a u t o   1 r e m   a u t o ;  
- }  
-  
- . s t e p - c a r d   h 3   {  
-         c o l o r :   v a r ( - - t e x t - p r i m a r y ) ;  
-         m a r g i n - b o t t o m :   0 . 5 r e m ;  
-         f o n t - s i z e :   1 . 1 r e m ;  
- }  
-  
- . s t e p - c a r d   p   {  
-         f o n t - s i z e :   0 . 9 r e m ;  
-         m a r g i n - b o t t o m :   0 ;  
- }  
-  
- . f e a t u r e s - l i s t   {  
-         l i s t - s t y l e :   n o n e ;  
-         p a d d i n g :   0 ;  
-         d i s p l a y :   g r i d ;  
-         g r i d - t e m p l a t e - c o l u m n s :   r e p e a t ( a u t o - f i t ,   m i n m a x ( 3 0 0 p x ,   1 f r ) ) ;  
-         g a p :   1 r e m ;  
- }  
-  
- . f e a t u r e s - l i s t   l i   {  
-         b a c k g r o u n d :   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 0 2 ) ;  
-         p a d d i n g :   1 r e m ;  
-         b o r d e r - r a d i u s :   8 p x ;  
-         b o r d e r - l e f t :   3 p x   s o l i d   v a r ( - - a c c e n t - s e c o n d a r y ) ;  
- }  
-  
- . f e a t u r e s - l i s t   s t r o n g   {  
-         c o l o r :   v a r ( - - t e x t - p r i m a r y ) ;  
- }  
- 
+}
+
+/* Info Content Sections */
+.info-content {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--text-secondary);
+}
+
+.info-section {
+    margin-bottom: 3rem;
+}
+
+.info-section h2 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.info-section p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.step-card {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+}
+
+.step-number {
+    width: 32px;
+    height: 32px;
+    background: var(--accent-primary);
+    color: #000;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+}
+
+.step-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.step-card p {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.features-list li {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-secondary);
+}
+
+.features-list strong {
+    color: var(--text-primary);
+}
